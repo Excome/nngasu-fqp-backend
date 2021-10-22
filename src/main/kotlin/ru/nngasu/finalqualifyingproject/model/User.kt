@@ -18,7 +18,7 @@ data class User(
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = arrayOf(JoinColumn(name = "user_id")))
     @Enumerated(EnumType.STRING)
-    var roles: MutableSet<Role> = mutableSetOf(Role.GUEST)
+    var roles: MutableSet<Role> = mutableSetOf(Role.ROLE_GUEST)
 
     var firstName: String = ""
     var surName: String = ""
