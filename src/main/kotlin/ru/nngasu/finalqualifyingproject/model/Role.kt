@@ -2,6 +2,9 @@ package ru.nngasu.finalqualifyingproject.model
 
 import org.springframework.security.core.GrantedAuthority
 
+/**
+@author Peshekhonov, Maksim
+*/
 enum class Role(val id: Int, private val priority: Int): GrantedAuthority {
     /**
     @see MAX priority can be 1000!

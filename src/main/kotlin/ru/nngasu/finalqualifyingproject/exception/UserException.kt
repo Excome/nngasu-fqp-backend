@@ -2,6 +2,9 @@ package ru.nngasu.finalqualifyingproject.exception
 
 import ru.nngasu.finalqualifyingproject.exception.error.UserError
 
+/**
+@author Peshekhonov Maksim
+ */
 class UserException(message: String?): Exception(message) {
     var error: UserError? = UserError.UNSUPPORTED_OPERATION
 

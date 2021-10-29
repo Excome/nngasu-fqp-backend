@@ -9,6 +9,9 @@ import ru.nngasu.finalqualifyingproject.exception.error.UserError
 import ru.nngasu.finalqualifyingproject.model.User
 import ru.nngasu.finalqualifyingproject.repository.UserRepository
 
+/**
+@author Peshekhonov Maksim
+ */
 @Service
 class UserService : UserDetailsService {
     @Autowired

@@ -1,7 +1,9 @@
 package ru.nngasu.finalqualifyingproject.exception.error
 
-import kotlin.Error
-
+/**
+@author Peshekhonov Maksim
+ */
 open interface Error {
-
+    val code: Int
+    val message: String
 }

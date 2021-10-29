@@ -4,6 +4,9 @@ import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import javax.persistence.*
 
+/**
+@author Peshekhonov Maksim
+ */
 @Entity
 @Table(name = "users")
 data class User(
@@ -22,6 +25,10 @@ data class User(
 
     var firstName: String = ""
     var surName: String = ""
+
+//    @CreatedDate
+//    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyy HH:mm")
+//    lateinit var createdDate: Date
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return this.roles

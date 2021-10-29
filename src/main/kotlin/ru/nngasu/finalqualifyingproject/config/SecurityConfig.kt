@@ -7,29 +7,48 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.web.AuthenticationEntryPoint
+import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import ru.nngasu.finalqualifyingproject.config.security.AuthFailureHandler
-import ru.nngasu.finalqualifyingproject.config.security.AuthSuccessHandler
+import ru.nngasu.finalqualifyingproject.config.security.*
 import ru.nngasu.finalqualifyingproject.service.UserService
 
+
+/**
+@author Peshekhonov Maksim
+ */
 @Configuration
 @EnableWebSecurity
 class SecurityConfig(
     val userService: UserService,
     val authSuccessHandler: AuthSuccessHandler,
-    val authFailureHandler: AuthFailureHandler
+    val authFailureHandler: AuthFailureHandler,
+    val logoutSuccessHandler: LogoutSuccessHandler
 ): WebSecurityConfigurerAdapter() {
 
     override fun configure(http: HttpSecurity) {
         http
             .cors()
                 .configurationSource(corsConfigurationSource())
-            .and()
+                .and()
             .authorizeRequests()
-                .antMatchers("/", "/users/**").permitAll()
+                .antMatchers("/", "/users/**", "/signup").permitAll()
                 .anyRequest().authenticated()
+                .and()
+            .apply(AuthFilterConfigurer(AuthFilter(), "/login"))
+                .successHandler(authSuccessHandler)
+                .failureHandler(authFailureHandler)
+                .and()
+            .logout()
+                .logoutSuccessHandler(logoutSuccessHandler)
+                .invalidateHttpSession(true)
+                .permitAll()
+                .and()
+            .exceptionHandling()
+                .accessDeniedHandler(accessDeniedHandler())
+                .authenticationEntryPoint(authEntryPoint())
                 .and()
             .csrf().disable()
     }
@@ -41,6 +60,16 @@ class SecurityConfig(
     @Bean
     fun passwordEncoder(): BCryptPasswordEncoder {
         return BCryptPasswordEncoder()
+    }
+
+    @Bean
+    fun accessDeniedHandler(): AccessDeniedHandler? {
+        return RestAccessDeniedHandler()
+    }
+
+    @Bean
+    fun authEntryPoint(): AuthenticationEntryPoint? {
+        return AuthRestEntryPoint()
     }
 
     @Bean
