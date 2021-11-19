@@ -3,6 +3,7 @@ package ru.nngasu.finalqualifyingproject.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import ru.nngasu.finalqualifyingproject.exception.UserException
 import ru.nngasu.finalqualifyingproject.exception.error.UserError
@@ -16,6 +17,8 @@ import ru.nngasu.finalqualifyingproject.repository.UserRepository
 class UserService : UserDetailsService {
     @Autowired
     private lateinit var userRepository: UserRepository
+    @Autowired
+    private lateinit var passwordEncoder: BCryptPasswordEncoder
 
     fun createUser(userName: String, email: String, pass: String, passConfirm: String): User{
         var userFromDb = userRepository.findUserByEmail(email = email)
@@ -29,7 +32,8 @@ class UserService : UserDetailsService {
         if (pass != passConfirm)
             throw UserException("Entered passwords aren't equal", UserError.PASSWORDS_ARE_NOT_EQUAL)
 
-        return userRepository.save(User(userName = userName, pass = pass, email = email))
+        val passEncode = this.passwordEncoder.encode(pass)
+        return userRepository.save(User(userName = userName, pass = passEncode, email = email))
     }
 
     fun getUserByUserName(userName: String): User {

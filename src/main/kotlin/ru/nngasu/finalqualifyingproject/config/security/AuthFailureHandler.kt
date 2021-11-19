@@ -19,7 +19,7 @@ class AuthFailureHandler: SimpleUrlAuthenticationFailureHandler() {
     ) {
         val responseBody: HashMap<String, String> =  hashMapOf()
         val mapper = ObjectMapper()
-        responseBody["auth"] = "FAILURE"
+        responseBody["token"] = "failure"
         response!!.status = HttpServletResponse.SC_UNAUTHORIZED
         response.contentType = "application/json"
         response.writer.write(mapper.writeValueAsString(responseBody))
