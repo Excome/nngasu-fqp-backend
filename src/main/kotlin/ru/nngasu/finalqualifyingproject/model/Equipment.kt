@@ -1,14 +1,12 @@
 package ru.nngasu.finalqualifyingproject.model
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 /**
-@author Peshekhonov Maksim
+@author Lalykin Kirill
 */
 @Entity
+@Table(name = "equipment")
 data class Equipment(
     var name: String,
     var count: Int,
@@ -18,4 +16,20 @@ data class Equipment(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: Long = 0
+
+    fun getEquipmentName(): String {
+        return this.name
+    }
+
+    fun getEquipmentCount(): Int {
+        return this.count
+    }
+
+    fun getEquipmentType(): String {
+        return this.type
+    }
+
+    fun getEquipmentDescription(): String{
+        return this.description
+    }
 }
