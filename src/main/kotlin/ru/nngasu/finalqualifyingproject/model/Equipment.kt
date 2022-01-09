@@ -1,14 +1,12 @@
 package ru.nngasu.finalqualifyingproject.model
 
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
+import javax.persistence.*
 
 /**
 @author Peshekhonov Maksim
 */
 @Entity
+@Table(name = "equipment")
 data class Equipment(
     var name: String,
     var count: Int,

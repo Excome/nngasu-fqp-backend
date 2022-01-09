@@ -9,4 +9,6 @@ import ru.nngasu.finalqualifyingproject.model.Equipment
  */
 @Repository
 interface EquipmentRepository: JpaRepository<Equipment, Long> {
+    fun findEquipmentByName(name: String): Equipment?
+    fun findEquipmentByType(type: String): Equipment?
 }
