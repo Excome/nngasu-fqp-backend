@@ -34,12 +34,12 @@ class JwtFilter : GenericFilterBean() {
 
     @Throws(IOException::class, ServletException::class)
     override fun doFilter(servletRequest: ServletRequest, servletResponse: ServletResponse?, filterChain: FilterChain) {
-        LOGGER.info("do filter...")
         val token = getTokenFromRequest(servletRequest as HttpServletRequest)
         if (token != null && jwtProvider.validateToken(token)) {
             val userLogin = jwtProvider.getLoginFromToken(token)
             val user = userService.loadUserByUsername(userLogin)
             val auth = UsernamePasswordAuthenticationToken(user, null, user.getAuthorities())
+//            LOGGER.debug("Generate token for ${user} user.")
             SecurityContextHolder.getContext().authentication = auth
         } else {
             LOGGER.warn("Token not valid!")

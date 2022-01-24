@@ -22,6 +22,7 @@ class JwtProvider {
 
     fun generateToken(login: String?): String? {
         val date: Date = Date.from(LocalDate.now().plusDays(15).atStartOfDay(ZoneId.systemDefault()).toInstant())
+        LOGGER.debug("Generate token for ${login} user")
         return Jwts.builder()
             .setSubject(login)
             .setExpiration(date)
