@@ -26,8 +26,6 @@ class AuthSuccessHandler: SimpleUrlAuthenticationSuccessHandler() {
         // Generate JWT token after success auth
         val token = jwtProvider.generateToken(authentication!!.name)
         responseBody["token"] = token!!
-//        responseBody["auth"] = "SUCCESS"
-//        responseBody["username"] = authentication!!.name
         response!!.status = HttpServletResponse.SC_OK
         response.contentType = "application/json"
         response.writer.write(mapper.writeValueAsString(responseBody))

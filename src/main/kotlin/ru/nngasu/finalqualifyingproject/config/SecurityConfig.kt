@@ -9,8 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.security.web.AuthenticationEntryPoint
-import org.springframework.security.web.access.AccessDeniedHandler
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
@@ -18,7 +16,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import ru.nngasu.finalqualifyingproject.config.jwt.JwtFilter
 import ru.nngasu.finalqualifyingproject.config.security.*
 import ru.nngasu.finalqualifyingproject.service.UserService
-
 
 /**
 @author Peshekhonov Maksim
@@ -28,7 +25,7 @@ import ru.nngasu.finalqualifyingproject.service.UserService
 class SecurityConfig(
     val authSuccessHandler: AuthSuccessHandler,
     val authFailureHandler: AuthFailureHandler,
-    val logoutSuccessHandler: LogoutSuccessHandler
+    val restAccessDeniedHandler: RestAccessDeniedHandler,
 ): WebSecurityConfigurerAdapter() {
     @Autowired
     private lateinit var userService: UserService
@@ -52,13 +49,8 @@ class SecurityConfig(
                 .successHandler(authSuccessHandler)
                 .failureHandler(authFailureHandler)
                 .and()
-            .logout()
-                .logoutSuccessHandler(logoutSuccessHandler)
-                .invalidateHttpSession(true)
-                .permitAll()
-                .and()
             .exceptionHandling()
-                .accessDeniedHandler(accessDeniedHandler())
+                .accessDeniedHandler(restAccessDeniedHandler)
     }
 
     override fun configure(auth: AuthenticationManagerBuilder) {
@@ -71,23 +63,13 @@ class SecurityConfig(
     }
 
     @Bean
-    fun accessDeniedHandler(): AccessDeniedHandler? {
-        return RestAccessDeniedHandler()
-    }
-
-    @Bean
-    fun authEntryPoint(): AuthenticationEntryPoint? {
-        return AuthRestEntryPoint()
-    }
-
-    @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("*");
-        configuration.allowedHeaders = listOf("*");
-        configuration.allowedMethods = listOf("*");
-        configuration.allowCredentials = true;
-        configuration.maxAge = 86400L;
+        configuration.allowedOrigins = listOf("*")
+        configuration.allowedHeaders = listOf("*")
+        configuration.allowedMethods = listOf("*")
+        configuration.allowCredentials = true
+        configuration.maxAge = 86400L
 
         val source = UrlBasedCorsConfigurationSource()
         source.registerCorsConfiguration("/**", configuration)
