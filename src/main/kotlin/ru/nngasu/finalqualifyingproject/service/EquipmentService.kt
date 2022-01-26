@@ -19,12 +19,14 @@ class EquipmentService {
         var equipmentFromDb = equipmentRepository.findEquipmentByName(name = name)
         if (equipmentFromDb != null)
             throw EquipmentException("Equipment with name '${name}' already exist", EquipmentError.EQUIPMENT_IS_ALREADY_EXISTS)
+
         return equipmentRepository.save(Equipment(name = name, type = type, count = count, description = description))
     }
 
     fun getEquipmentByName(name: String): Equipment {
         return equipmentRepository.findEquipmentByName(name)
             ?: throw EquipmentException("Equipment '${name}' not found!", EquipmentError.EQUIPMENT_NOT_FOUND)
+
     }
 
     fun getEquipmentByType(type: String): Equipment {
