@@ -86,7 +86,7 @@ class UserService : UserDetailsService {
         if (user.pass != user.passConfirm)
             throw UserException("Unable change password for '${user.userName}' username, pass and passConf aren't equal", UserError.PASSWORDS_ARE_NOT_EQUAL)
 
-        userFromDb.pass = user.pass
+        userFromDb.pass = this.passwordEncoder.encode(user.pass)
         return userRepository.save(userFromDb)
     }
 

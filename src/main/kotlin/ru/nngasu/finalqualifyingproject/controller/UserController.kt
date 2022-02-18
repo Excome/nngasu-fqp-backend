@@ -1,5 +1,6 @@
 package ru.nngasu.finalqualifyingproject.controller
 
+import com.fasterxml.jackson.annotation.JsonView
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.data.domain.Pageable
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import ru.nngasu.finalqualifyingproject.exception.UserException
 import ru.nngasu.finalqualifyingproject.model.User
+import ru.nngasu.finalqualifyingproject.model.jsonView.UserView
 import ru.nngasu.finalqualifyingproject.service.UserService
 
 /**
@@ -20,6 +22,7 @@ class UserController(private val userService: UserService) {
     private val LOGGER: Logger = LogManager.getLogger(UserController::class)
 
     @GetMapping("/users")
+    @JsonView(UserView.Common::class)
     @Throws(UserException::class)
     fun getUsersList(@RequestParam(required = false) userName: String?,
                      @PageableDefault(size = 10, sort = ["createdDate"],
@@ -38,6 +41,7 @@ class UserController(private val userService: UserService) {
     }
 
     @GetMapping("/users/{userName}")
+    @JsonView(UserView.Profile::class)
     @Throws(UserException::class)
     fun userProfile(@PathVariable userName: String): ResponseEntity<User> {
         LOGGER.info("Gonna get user by '${userName} username'")
@@ -48,6 +52,7 @@ class UserController(private val userService: UserService) {
     }
 
     @PutMapping("/users/{userName}")
+    @JsonView(UserView.Profile::class)
     @Throws(UserException::class)
     fun editUserProfile(@PathVariable userName: String,  @RequestBody user: User): ResponseEntity<User>{
         val responseBody = userService.changeUserProfile(user)
@@ -59,12 +64,13 @@ class UserController(private val userService: UserService) {
     @Throws(UserException::class)
     fun changeUserPassword(@PathVariable userName: String, @RequestBody user: User): ResponseEntity<User>{
         user.userName = userName
-        val responseBody = userService.changeUserPassword(user)
+        userService.changeUserPassword(user)
 
-        return ResponseEntity<User>(responseBody, HttpStatus.OK)
+        return ResponseEntity<User>(HttpStatus.OK)
     }
 
     @PutMapping("/users/{userName}/change-email")
+    @JsonView(UserView.Profile::class)
     @Throws(UserException::class)
     fun changeUserEmail(@PathVariable userName: String, @RequestBody user: User): ResponseEntity<User>{
         user.userName = userName
