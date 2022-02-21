@@ -37,6 +37,14 @@ class RestExceptionHandler: ResponseEntityExceptionHandler() {
         return ResponseEntity<Any>(error, HttpHeaders(), error.status!!)
     }
 
+    @ExceptionHandler(*[EquipmentException::class])
+    fun handleUserException(ex: EquipmentException): ResponseEntity<Any> {
+        val error = RestError(HttpStatus.CONFLICT, ex.error!!, ex.message!!, ex.javaClass.simpleName)
+        LOGGER.error(error)
+
+        return ResponseEntity<Any>(error, HttpHeaders(), error.status!!)
+    }
+
     override fun handleMethodArgumentNotValid(
         ex: MethodArgumentNotValidException,
         headers: HttpHeaders,

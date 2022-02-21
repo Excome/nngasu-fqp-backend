@@ -1,7 +1,8 @@
 package ru.nngasu.finalqualifyingproject.model.jsonView
 
 /**
-@author Peshekhonov Maksim
+ * This marker interfaces for set serialization view of Error to Json
+ * @author Peshekhonov Maksim
  */
 class ErrorView {
     interface Info
