@@ -1,15 +1,21 @@
 package ru.nngasu.finalqualifyingproject.exception.error
 
+import com.fasterxml.jackson.annotation.JsonView
 import org.springframework.http.HttpStatus
+import ru.nngasu.finalqualifyingproject.model.jsonView.ErrorView
 
 
 /**
 @author Peshekhonov Maksim
  */
 class RestError() {
+    @JsonView(ErrorView.Info::class)
     var status: HttpStatus? = null
+    @JsonView(ErrorView.Info::class)
     var subCode = 0
+    @JsonView(ErrorView.Info::class)
     var message: String? = null
+    @JsonView(ErrorView.Info::class)
     var errors: List<String>? = null
 
     constructor(status: HttpStatus, message: String, errors: List<String>) : this() {
