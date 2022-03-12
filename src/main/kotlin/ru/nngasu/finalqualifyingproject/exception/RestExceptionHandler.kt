@@ -22,9 +22,8 @@ import java.util.function.Consumer
 
 
 /**
-@author Peshekhonov Maksim
+ * @author Peshekhonov Maksim
  */
-
 @RestControllerAdvice
 class RestExceptionHandler: ResponseEntityExceptionHandler() {
     private val LOGGER: Logger = LogManager.getLogger(RestExceptionHandler::class)
@@ -38,7 +37,15 @@ class RestExceptionHandler: ResponseEntityExceptionHandler() {
     }
 
     @ExceptionHandler(*[EquipmentException::class])
-    fun handleUserException(ex: EquipmentException): ResponseEntity<Any> {
+    fun handleEquipmentException(ex: EquipmentException): ResponseEntity<Any> {
+        val error = RestError(HttpStatus.CONFLICT, ex.error!!, ex.message!!, ex.javaClass.simpleName)
+        LOGGER.error(error)
+
+        return ResponseEntity<Any>(error, HttpHeaders(), error.status!!)
+    }
+
+    @ExceptionHandler(*[RequestException::class])
+    fun handleRequestException(ex: RequestException): ResponseEntity<Any> {
         val error = RestError(HttpStatus.CONFLICT, ex.error!!, ex.message!!, ex.javaClass.simpleName)
         LOGGER.error(error)
 

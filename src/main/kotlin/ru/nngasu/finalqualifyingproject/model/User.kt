@@ -16,17 +16,18 @@ import javax.persistence.*
 @Entity
 @Table(name = "users")
 @EntityListeners(AuditingEntityListener::class)
-data class User(
-    @JsonView(UserView.Common::class)
-    var userName: String,
-    var pass: String,
-    @JsonView(UserView.Common::class)
-    var email: String,
-): UserDetails {
+class User : UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonView(UserView.Common::class)
     val id: Long = 0
+
+    @JsonView(UserView.Common::class)
+    var userName: String = ""
+    var pass: String = ""
+
+    @JsonView(UserView.Common::class)
+    var email: String = ""
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = [JoinColumn(name = "user_id")])
@@ -46,6 +47,14 @@ data class User(
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyy HH:mm")
     @JsonView(UserView.Common::class)
     var createdDate: Date = Date()
+
+    fun hasPriorityMoreThan(role: Role): Boolean {
+        for (r in this.roles) {
+            if (r.priority >= role.priority)
+                return true
+        }
+        return false
+    }
 
     override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
         return this.roles

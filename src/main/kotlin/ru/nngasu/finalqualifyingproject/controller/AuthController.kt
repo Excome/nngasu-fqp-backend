@@ -20,13 +20,8 @@ class AuthController(
 ) {
     @PostMapping("/registration")
     @Throws(UserException::class)
-    fun registration(@RequestBody body: Map<String, String>): ResponseEntity<User> {
-        val user = userService.createUser(
-            userName = body["username"]!!,
-            email = body["email"]!!,
-            pass = body["password"]!!,
-            passConfirm = body["passwordConf"]!!
-        )
-        return ResponseEntity(user, HttpStatus.OK)
+    fun registration(@RequestBody user: User): ResponseEntity<User> {
+        val responseBody = userService.createUser(user)
+        return ResponseEntity(responseBody, HttpStatus.OK)
     }
 }
