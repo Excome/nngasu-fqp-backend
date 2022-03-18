@@ -60,7 +60,7 @@ class RequestService {
     }
 
     fun changeRequest(request: Request): Request {
-        var requestFromDb = requestRepository.findByIdOrNull(request.id)
+        val requestFromDb = requestRepository.findByIdOrNull(request.id)
             ?: throw RequestException("Request  with '${request.id}' id not found", RequestError.REQUEST_NOT_FOUND)
 
         requestFromDb.author = request.author

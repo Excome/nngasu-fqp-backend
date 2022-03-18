@@ -1,5 +1,6 @@
 package ru.nngasu.finalqualifyingproject.controller
 
+import com.fasterxml.jackson.annotation.JsonView
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.springframework.beans.factory.annotation.Autowired
@@ -14,6 +15,7 @@ import ru.nngasu.finalqualifyingproject.exception.RequestException
 import ru.nngasu.finalqualifyingproject.model.Request
 import ru.nngasu.finalqualifyingproject.model.Role
 import ru.nngasu.finalqualifyingproject.model.User
+import ru.nngasu.finalqualifyingproject.model.jsonView.RequestView
 import ru.nngasu.finalqualifyingproject.service.RequestService
 
 /**
@@ -27,6 +29,7 @@ class RequestController {
     lateinit var requestService: RequestService
 
     @GetMapping("/requests")
+    @JsonView(RequestView.CommonView::class)
     @Throws(RequestException::class)
     fun getRequests(@RequestParam(required = false) author: String?,
                     @RequestParam(required = false) responsible: String?,
@@ -49,10 +52,27 @@ class RequestController {
         return ResponseEntity(responseBody, HttpStatus.OK)
     }
 
+    @GetMapping("/requests/{id}")
+    @JsonView(RequestView.All::class)
+    @Throws(RequestException::class)
+    fun getRequest(@PathVariable id: Long,
+                   @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
+        LOGGER.info("User ${crrUser.userName} tries to get request with '$id' id")
+        return if (crrUser.hasPriorityMoreThan(Role.ROLE_TECHNICIAN)){
+            val responseBody = requestService.getRequestById(id = id)
+            LOGGER.debug("Return request: $responseBody")
+            ResponseEntity(responseBody, HttpStatus.OK)
+        }else {
+            LOGGER.warn("User '${crrUser.userName}' doesn't have permissions to get request with '$id' id")
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+    }
+
     @PostMapping("/requests")
     @Throws(RequestException::class)
+    @JsonView(RequestView.All::class)
     fun createRequest(@RequestBody request: Request,
-                        @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
+                      @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
 
         LOGGER.info("User '${crrUser.userName}' tries to create new request: $request")
         return if (crrUser.hasPriorityMoreThan(Role.ROLE_TEACHER)) {
@@ -67,6 +87,7 @@ class RequestController {
 
     @PutMapping("/requests/{id}")
     @Throws(RequestException::class)
+    @JsonView(RequestView.All::class)
     fun editRequest(@PathVariable id: Long, @RequestBody request: Request,
                     @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
         LOGGER.info("User '${crrUser.userName}' tries to edit request with '$id' id: $request")
@@ -79,6 +100,5 @@ class RequestController {
             ResponseEntity(HttpStatus.FORBIDDEN)
         }
     }
-
 
 }
