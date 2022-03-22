@@ -7,7 +7,7 @@ import ru.nngasu.finalqualifyingproject.model.jsonView.RoleView
 /**
 @author Peshekhonov, Maksim
 */
-enum class Role(val id: Int, private val priority: Int): GrantedAuthority {
+enum class Role(val id: Int, val priority: Int): GrantedAuthority {
     /**
     @see MAX priority can be 1000!
     */

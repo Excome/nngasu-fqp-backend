@@ -22,20 +22,21 @@ class UserService : UserDetailsService {
     @Autowired
     private lateinit var passwordEncoder: BCryptPasswordEncoder
 
-    fun createUser(userName: String, email: String, pass: String, passConfirm: String): User {
-        var userFromDb = userRepository.findUserByEmail(email = email)
+    fun createUser(user: User): User {
+        var userFromDb = userRepository.findUserByEmail(email = user.email)
         if (userFromDb != null)
-            throw UserException("User with email '${email}' already exist", UserError.EMAIL_IS_ALREADY_USED)
+            throw UserException("User with email '${user.email}' already exist", UserError.EMAIL_IS_ALREADY_USED)
 
-        userFromDb = userRepository.findUserByUserName(userName = userName)
+        userFromDb = userRepository.findUserByUserName(userName = user.userName)
         if (userFromDb != null)
-            throw UserException("User '${userName}' already exist", UserError.USERNAME_IS_ALREADY_USED)
+            throw UserException("User '${user.userName}' already exist", UserError.USERNAME_IS_ALREADY_USED)
 
-        if (pass != passConfirm)
+        if (user.pass != user.passConfirm)
             throw UserException("Entered passwords aren't equal", UserError.PASSWORDS_ARE_NOT_EQUAL)
 
-        val passEncode = this.passwordEncoder.encode(pass)
-        return userRepository.save(User(userName = userName, pass = passEncode, email = email))
+        user.pass = this.passwordEncoder.encode(user.pass)
+
+        return userRepository.save(user)
     }
 
     fun getUserByUserName(userName: String): User {

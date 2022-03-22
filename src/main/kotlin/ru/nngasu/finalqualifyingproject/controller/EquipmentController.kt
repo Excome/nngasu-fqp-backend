@@ -19,11 +19,11 @@ import ru.nngasu.finalqualifyingproject.model.jsonView.EquipmentView
 import ru.nngasu.finalqualifyingproject.service.EquipmentService
 
 /**
-@author Peshekhonov Maksim
+ * @author Peshekhonov Maksim
  */
 @RestController
 class EquipmentController {
-    private val LOGGER: Logger = LogManager.getLogger(UserController::class)
+    private val LOGGER: Logger = LogManager.getLogger(EquipmentController::class)
 
     @Autowired
     private lateinit var equipmentService: EquipmentService
