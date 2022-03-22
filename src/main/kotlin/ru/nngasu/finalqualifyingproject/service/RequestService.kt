@@ -73,6 +73,18 @@ class RequestService {
         return requestRepository.save(requestFromDb)
     }
 
+    fun changeStatus(id: Long, status: Boolean): Request {
+        val request = getRequestById(id)
+        request.status = status
+        return requestRepository.save(request)
+    }
+
+    fun assignRequest(id: Long, request: Request): Request {
+        val requestFromDb = getRequestById(id)
+        requestFromDb.responsible = request.responsible
+        return requestRepository.save(requestFromDb)
+    }
+
     fun removeRequest(id: Long) {
         val request = getRequestById(id)
         requestRepository.delete(request)

@@ -69,8 +69,8 @@ class RequestController {
     }
 
     @PostMapping("/requests")
-    @Throws(RequestException::class)
     @JsonView(RequestView.All::class)
+    @Throws(RequestException::class)
     fun createRequest(@RequestBody request: Request,
                       @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
 
@@ -86,8 +86,8 @@ class RequestController {
     }
 
     @PutMapping("/requests/{id}")
-    @Throws(RequestException::class)
     @JsonView(RequestView.All::class)
+    @Throws(RequestException::class)
     fun editRequest(@PathVariable id: Long, @RequestBody request: Request,
                     @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
         LOGGER.info("User '${crrUser.userName}' tries to edit request with '$id' id: $request")
@@ -101,4 +101,51 @@ class RequestController {
         }
     }
 
+    @PutMapping("/request/{id}/assign")
+    @JsonView(RequestView.All::class)
+    @Throws(RequestException::class)
+    fun assignRequest(@PathVariable id: Long, @RequestBody requestBody: Request,
+                      @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
+        LOGGER.info("User '${crrUser.userName}' tries to assigt request with '$id' id to user ${requestBody.responsible}")
+        return if (crrUser.hasPriorityMoreThan(Role.ROLE_TECHNICIAN)){
+            val responseBody = requestService.assignRequest(id, requestBody)
+            LOGGER.debug("User ${crrUser.userName} successful assign request with '$id' id, return: $responseBody")
+            ResponseEntity(responseBody, HttpStatus.OK)
+        } else {
+            LOGGER.warn("User '${crrUser.userName}' doesn't have permissions to assign request with '$id' id: $requestBody")
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+    }
+
+    @PutMapping("/request/{id}/status")
+    @JsonView(RequestView.All::class)
+    @Throws(RequestException::class)
+    fun changeStateRequest(@PathVariable id: Long, @PathVariable status: Boolean,
+                           @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
+        LOGGER.info("User '${crrUser.userName}' tries change status to '$status' for '$id' request")
+        return if(crrUser.hasPriorityMoreThan(Role.ROLE_TECHNICIAN)){
+            val responseBody = requestService.changeStatus(id, status)
+            LOGGER.debug("Change status success, return: $responseBody")
+            ResponseEntity(responseBody, HttpStatus.OK)
+        } else{
+            LOGGER.warn("User '${crrUser.userName}' doesn't have permissions to change status for request with '$id' id")
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+    }
+
+    @DeleteMapping("/request/{id}")
+    @JsonView(RequestView.CommonView::class)
+    @Throws(RequestException::class)
+    fun removeRequest(@PathVariable id: Long,
+                      @AuthenticationPrincipal crrUser: User): ResponseEntity<String>{
+        LOGGER.info("User '${crrUser.userName}' tries to delete request with '$id' id.")
+        return if (crrUser.hasPriorityMoreThan(Role.ROLE_TECHNICIAN)){
+            requestService.removeRequest(id = id)
+            LOGGER.debug("Request with '$id' id was deleted by '${crrUser.userName}' user")
+            ResponseEntity(HttpStatus.OK)
+        } else {
+            LOGGER.warn("User '${crrUser.userName}' doesn't have permissions to delete request with '$id' id")
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+    }
 }
