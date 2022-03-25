@@ -1,5 +1,11 @@
 create sequence hibernate_sequence start 1 increment 1;
 
+create table hibernate_sequences (
+    sequence_name varchar(255) not null,
+    next_val int8,
+    primary key (sequence_name)
+);
+
 create table equipment (
     id int8 not null,
     count int4 not null,
@@ -39,6 +45,9 @@ create table users (
     user_name varchar(255),
     primary key (id)
 );
+
+insert into hibernate_sequences(sequence_name, next_val)
+    values ('default',0);
 
 alter table if exists request_equipment
     add constraint UK_dartc30y2m56f2sajxltp3etm unique (equipment_id);
