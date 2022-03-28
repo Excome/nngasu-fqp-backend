@@ -41,7 +41,7 @@ class SecurityConfig(
                 .configurationSource(corsConfigurationSource())
                 .and()
             .authorizeRequests()
-                .antMatchers("/", "/registration").permitAll()
+                .antMatchers("/", "/registration", "/verify").permitAll()
                 .anyRequest().authenticated()
                 .and()
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)

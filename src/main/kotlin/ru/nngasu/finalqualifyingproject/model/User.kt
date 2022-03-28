@@ -43,6 +43,10 @@ class User : UserDetails {
     @Transient
     var passConfirm: String = ""
 
+    var verificationCode: String = ""
+    @JsonView(UserView.Profile::class)
+    var enabled: Boolean = false
+
     @CreatedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyy HH:mm")
     @JsonView(UserView.Common::class)
@@ -81,6 +85,40 @@ class User : UserDetails {
     }
 
     override fun isEnabled(): Boolean {
+        return this.enabled
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as User
+
+        if (id != other.id) return false
+        if (userName != other.userName) return false
+        if (pass != other.pass) return false
+        if (email != other.email) return false
+        if (roles != other.roles) return false
+        if (firstName != other.firstName) return false
+        if (surName != other.surName) return false
+        if (verificationCode != other.verificationCode) return false
+        if (enabled != other.enabled) return false
+        if (createdDate != other.createdDate) return false
+
         return true
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + userName.hashCode()
+        result = 31 * result + pass.hashCode()
+        result = 31 * result + email.hashCode()
+        result = 31 * result + roles.hashCode()
+        result = 31 * result + firstName.hashCode()
+        result = 31 * result + surName.hashCode()
+        result = 31 * result + verificationCode.hashCode()
+        result = 31 * result + enabled.hashCode()
+        result = 31 * result + createdDate.hashCode()
+        return result
     }
 }
