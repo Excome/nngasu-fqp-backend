@@ -43,6 +43,8 @@ create table users (
     pass varchar(255),
     sur_name varchar(255),
     user_name varchar(255),
+    verification_code varchar(255),
+    enabled boolean not null,
     primary key (id)
 );
 

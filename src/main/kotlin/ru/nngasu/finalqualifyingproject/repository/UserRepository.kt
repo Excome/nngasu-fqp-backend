@@ -15,5 +15,6 @@ interface UserRepository: JpaRepository<User, Long>{
     fun findUserByEmail(email: String): User?
     override fun findAll(pageable: Pageable): Page<User>
     fun findAllByUserNameContains(userName: String?, pageable: Pageable): Page<User>
+    fun findUserByUserNameAndVerificationCode(userName: String, verificationCode: String): User?
 
 }

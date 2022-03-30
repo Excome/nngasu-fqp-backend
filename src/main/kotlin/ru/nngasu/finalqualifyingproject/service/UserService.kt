@@ -18,9 +18,10 @@ import ru.nngasu.finalqualifyingproject.repository.UserRepository
 class UserService : UserDetailsService {
     @Autowired
     private lateinit var userRepository: UserRepository
-
     @Autowired
     private lateinit var passwordEncoder: BCryptPasswordEncoder
+    @Autowired
+    private lateinit var mailService: MailService
 
     fun createUser(user: User): User {
         var userFromDb = userRepository.findUserByEmail(email = user.email)
@@ -35,6 +36,8 @@ class UserService : UserDetailsService {
             throw UserException("Entered passwords aren't equal", UserError.PASSWORDS_ARE_NOT_EQUAL)
 
         user.pass = this.passwordEncoder.encode(user.pass)
+        user.verificationCode = user.hashCode().toString()
+        mailService.sendVerificationEmail(user)
 
         return userRepository.save(user)
     }
@@ -109,5 +112,13 @@ class UserService : UserDetailsService {
 
     override fun loadUserByUsername(username: String?): UserDetails {
         return getUserByUserName(username!!)
+    }
+
+    fun verifyUser(userName: String, code: String): User {
+        val user = userRepository.findUserByUserNameAndVerificationCode(userName, code)
+            ?: throw UserException("User '$userName' with '$code' verification code not found", UserError.USER_NOT_FOUND)
+
+        user.enabled = true
+        return userRepository.save(user)
     }
 }
