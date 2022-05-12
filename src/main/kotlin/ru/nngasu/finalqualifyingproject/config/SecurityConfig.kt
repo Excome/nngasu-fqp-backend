@@ -16,6 +16,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import ru.nngasu.finalqualifyingproject.config.jwt.JwtFilter
 import ru.nngasu.finalqualifyingproject.config.security.*
 import ru.nngasu.finalqualifyingproject.service.UserService
+import java.util.*
 
 /**
 @author Peshekhonov Maksim
@@ -41,7 +42,7 @@ class SecurityConfig(
                 .configurationSource(corsConfigurationSource())
                 .and()
             .authorizeRequests()
-                .antMatchers("/", "/registration", "/verify").permitAll()
+                .antMatchers("/", "/login", "/registration", "/verify").permitAll()
                 .anyRequest().authenticated()
                 .and()
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter::class.java)
@@ -65,7 +66,7 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("*")
+        configuration.allowedOriginPatterns = listOf("*")
         configuration.allowedHeaders = listOf("*")
         configuration.allowedMethods = listOf("*")
         configuration.allowCredentials = true
