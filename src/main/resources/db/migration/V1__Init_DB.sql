@@ -51,8 +51,8 @@ create table users (
 insert into hibernate_sequences(sequence_name, next_val)
     values ('default',0);
 
-alter table if exists request_equipment
-    add constraint UK_dartc30y2m56f2sajxltp3etm unique (equipment_id);
+-- alter table if exists request_equipment
+--     add constraint UK_dartc30y2m56f2sajxltp3etm unique (equipment_id);
 
 alter table if exists request
     add constraint FKroq2b37lskxf9a0tmen9h1g4m

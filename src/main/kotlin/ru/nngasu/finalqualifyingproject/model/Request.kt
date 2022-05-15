@@ -14,7 +14,7 @@ class Request{
     lateinit var author: User
     @JsonView(RequestView.CommonView::class)
     var audience: String = ""
-    @OneToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JsonView(RequestView.All::class)
     var equipment: MutableList<Equipment> = mutableListOf()
     @Id
