@@ -45,7 +45,7 @@ class User : UserDetails {
 
     var verificationCode: String = ""
     @JsonView(UserView.Profile::class)
-    var enabled: Boolean = false
+    var enabled: Boolean = true
 
     @CreatedDate
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyy HH:mm")
@@ -85,7 +85,8 @@ class User : UserDetails {
     }
 
     override fun isEnabled(): Boolean {
-        return this.enabled
+//        return this.enabled
+        return true
     }
 
     override fun equals(other: Any?): Boolean {

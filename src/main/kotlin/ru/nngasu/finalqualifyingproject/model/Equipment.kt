@@ -9,19 +9,17 @@ import javax.persistence.*
 */
 @Entity
 @Table(name = "equipment")
-data class Equipment(
+class Equipment{
     @JsonView(EquipmentView.Common::class)
-    var name: String,
-    @JsonView(EquipmentView.Common::class)
-    var count: Int,
-    @JsonView(EquipmentView.Common::class)
-    var type: String,
-) {
+    var name: String = ""
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonView(EquipmentView.All::class)
     var id: Long = 0
-
+    @JsonView(EquipmentView.Common::class)
+    var count: Int = 0
+    @JsonView(EquipmentView.Common::class)
+    var type: String = ""
     @JsonView(EquipmentView.Common::class)
     var description: String = ""
 }

@@ -53,8 +53,10 @@ class RequestService {
     fun createRequest(request: Request): Request {
         val author = userService.getUserByUserName(request.author.userName)
         request.author = author
-        request.equipment = request.equipment.stream()
-            .map { equipment ->  equipmentService.getEquipmentByName(equipment.name)}.toList()
+        for (i in request.equipment.indices) {
+            val equipmentByName = equipmentService.getEquipmentByName(request.equipment[i].name)
+            request.equipment[i] = equipmentByName
+        }
 
         return requestRepository.save(request)
     }

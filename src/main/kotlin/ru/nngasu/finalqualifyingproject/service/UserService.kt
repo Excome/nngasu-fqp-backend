@@ -37,7 +37,7 @@ class UserService : UserDetailsService {
 
         user.pass = this.passwordEncoder.encode(user.pass)
         user.verificationCode = user.hashCode().toString()
-        mailService.sendVerificationEmail(user)
+//        mailService.sendVerificationEmail(user)
 
         return userRepository.save(user)
     }

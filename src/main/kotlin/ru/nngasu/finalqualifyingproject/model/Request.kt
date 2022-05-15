@@ -8,16 +8,15 @@ import javax.persistence.*
 @author Peshekhonov Maksim
  */
 @Entity
-data class Request(
+class Request{
     @ManyToOne(fetch = FetchType.EAGER)
     @JsonView(RequestView.CommonView::class)
-    var author: User,
+    lateinit var author: User
     @JsonView(RequestView.CommonView::class)
-    var audience: String,
+    var audience: String = ""
     @OneToMany(fetch = FetchType.EAGER)
     @JsonView(RequestView.All::class)
-    var equipment: List<Equipment>,
-) {
+    var equipment: MutableList<Equipment> = mutableListOf()
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     @JsonView(RequestView.CommonView::class)
