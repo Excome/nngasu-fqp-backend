@@ -35,9 +35,9 @@ class User : UserDetails {
     @JsonView(UserView.Profile::class)
     var roles: MutableSet<Role> = mutableSetOf(Role.ROLE_GUEST)
 
-    @JsonView(UserView.Profile::class)
+    @JsonView(UserView.Common::class)
     var firstName: String = ""
-    @JsonView(UserView.Profile::class)
+    @JsonView(UserView.Common::class)
     var surName: String = ""
 
     @Transient
