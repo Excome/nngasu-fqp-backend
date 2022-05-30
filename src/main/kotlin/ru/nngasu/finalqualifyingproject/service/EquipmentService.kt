@@ -62,7 +62,7 @@ class EquipmentService {
     fun changeEquipment(name: String, equipment: Equipment): Equipment {
         val equipmentFromDb = getEquipmentByName(name)
 
-        if(equipmentFromDb.name == equipment.name)
+        if(name != equipment.name && equipmentFromDb.name == equipment.name)
             throw EquipmentException("Equipment with '${equipment.name} name already exist'", EquipmentError.EQUIPMENT_IS_ALREADY_EXISTS)
 
         equipmentFromDb.name = equipment.name

@@ -53,6 +53,17 @@ class UserController(private val userService: UserService) {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
+    @GetMapping("/responsible-users")
+    @JsonView(UserView.Profile::class)
+    @Throws(UserException::class)
+    fun responsibleUsers(): ResponseEntity<MutableList<User>> {
+        LOGGER.info("Gonna get responsible users")
+        val users = userService.getTechnicianUsers()
+
+        LOGGER.debug("Return '${users}'")
+        return ResponseEntity(users, HttpStatus.OK)
+    }
+
     @PutMapping("/users/{userName}")
     @JsonView(UserView.Profile::class)
     @Throws(UserException::class)

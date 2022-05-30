@@ -58,7 +58,7 @@ class RequestController {
     fun getRequest(@PathVariable id: Long,
                    @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
         LOGGER.info("User ${crrUser.userName} tries to get request with '$id' id")
-        return if (crrUser.hasPriorityMoreThan(Role.ROLE_TECHNICIAN)){
+        return if (crrUser.hasPriorityMoreThan(Role.ROLE_TEACHER)){
             val responseBody = requestService.getRequestById(id = id)
             LOGGER.debug("Return request: $responseBody")
             ResponseEntity(responseBody, HttpStatus.OK)
@@ -101,7 +101,7 @@ class RequestController {
         }
     }
 
-    @PutMapping("/request/{id}/assign")
+    @PutMapping("/requests/{id}/assign")
     @JsonView(RequestView.All::class)
     @Throws(RequestException::class)
     fun assignRequest(@PathVariable id: Long, @RequestBody requestBody: Request,
@@ -117,10 +117,10 @@ class RequestController {
         }
     }
 
-    @PutMapping("/request/{id}/status")
+    @PutMapping("/requests/{id}/status")
     @JsonView(RequestView.All::class)
     @Throws(RequestException::class)
-    fun changeStateRequest(@PathVariable id: Long, @PathVariable status: Boolean,
+    fun changeStateRequest(@PathVariable id: Long, @RequestParam status: Boolean,
                            @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
         LOGGER.info("User '${crrUser.userName}' tries change status to '$status' for '$id' request")
         return if(crrUser.hasPriorityMoreThan(Role.ROLE_TECHNICIAN)){
@@ -133,7 +133,7 @@ class RequestController {
         }
     }
 
-    @DeleteMapping("/request/{id}")
+    @DeleteMapping("/requests/{id}")
     @JsonView(RequestView.CommonView::class)
     @Throws(RequestException::class)
     fun removeRequest(@PathVariable id: Long,

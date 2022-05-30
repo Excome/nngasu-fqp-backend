@@ -55,6 +55,13 @@ class UserService : UserDetailsService {
     fun changeUserProfile(user: User): User {
         var userFromDb = getUserByUserName(user.userName)
 
+        if (userFromDb.email != user.email) {
+            if (userRepository.findUserByEmail(user.email) != null)
+                throw UserException("Unable change '${userFromDb.email}' email for '${userFromDb.userName} user. Email '${user.email}' already used'", UserError.EMAIL_IS_ALREADY_USED)
+
+            userFromDb.email = user.email
+        }
+
         userFromDb.firstName = user.firstName
         userFromDb.surName = user.surName
         userFromDb.roles = user.roles
@@ -112,6 +119,10 @@ class UserService : UserDetailsService {
 
     override fun loadUserByUsername(username: String?): UserDetails {
         return getUserByUserName(username!!)
+    }
+
+    fun getTechnicianUsers(): MutableList<User> {
+        return userRepository.findResponsibleUsers()
     }
 
     fun verifyUser(userName: String, code: String): User {

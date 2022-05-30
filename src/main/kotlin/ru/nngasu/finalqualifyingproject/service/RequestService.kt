@@ -6,6 +6,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import ru.nngasu.finalqualifyingproject.exception.RequestException
 import ru.nngasu.finalqualifyingproject.exception.error.RequestError
+import ru.nngasu.finalqualifyingproject.model.Equipment
 import ru.nngasu.finalqualifyingproject.model.Request
 import ru.nngasu.finalqualifyingproject.repository.RequestRepository
 import kotlin.streams.toList
@@ -23,7 +24,7 @@ class RequestService {
     lateinit var userService: UserService
 
     fun getRequestById(id: Long): Request {
-        return requestRepository.findByIdOrNull(id)
+        return requestRepository.findRequestById(id)
             ?: throw RequestException("Request  with '$id' id not found", RequestError.REQUEST_NOT_FOUND)
     }
 
@@ -52,6 +53,7 @@ class RequestService {
 
     fun createRequest(request: Request): Request {
         val author = userService.getUserByUserName(request.author.userName)
+
         request.author = author
         for (i in request.equipment.indices) {
             val equipmentByName = equipmentService.getEquipmentByName(request.equipment[i].name)
@@ -65,9 +67,17 @@ class RequestService {
         val requestFromDb = requestRepository.findByIdOrNull(request.id)
             ?: throw RequestException("Request  with '${request.id}' id not found", RequestError.REQUEST_NOT_FOUND)
 
-        requestFromDb.author = request.author
-        requestFromDb.responsible = request.responsible
-        requestFromDb.equipment = request.equipment
+        requestFromDb.author = userService.getUserByUserName(request.author.userName)
+        if (request.responsible != null)
+            requestFromDb.responsible = userService.getUserByUserName(request.responsible!!.userName)
+        else
+            requestFromDb.responsible = null
+        var equipments = mutableListOf<Equipment>();
+        for (item in request.equipment){
+            equipments.add(equipmentService.getEquipmentByName(item.name));
+        }
+
+        requestFromDb.equipment = equipments;
         requestFromDb.audience = request.audience
         requestFromDb.description = request.description
         requestFromDb.status = request.status
