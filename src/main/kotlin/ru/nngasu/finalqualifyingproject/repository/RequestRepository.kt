@@ -16,4 +16,5 @@ interface RequestRepository: JpaRepository<Request, Long> {
     fun findAllByResponsibleUserName(userName: String, pageable: Pageable): Page<Request>
     fun findAllByStatus(status: Boolean, pageable: Pageable): Page<Request>
     fun findRequestById(id: Long): Request?
+    fun deleteAllByAuthorUserName(userName: String)
 }

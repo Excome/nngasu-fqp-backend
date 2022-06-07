@@ -6,9 +6,11 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import ru.nngasu.finalqualifyingproject.exception.UserException
 import ru.nngasu.finalqualifyingproject.exception.error.UserError
 import ru.nngasu.finalqualifyingproject.model.User
+import ru.nngasu.finalqualifyingproject.repository.RequestRepository
 import ru.nngasu.finalqualifyingproject.repository.UserRepository
 
 /**
@@ -18,6 +20,8 @@ import ru.nngasu.finalqualifyingproject.repository.UserRepository
 class UserService : UserDetailsService {
     @Autowired
     private lateinit var userRepository: UserRepository
+    @Autowired
+    private lateinit var requestRepository: RequestRepository
     @Autowired
     private lateinit var passwordEncoder: BCryptPasswordEncoder
     @Autowired
@@ -64,7 +68,7 @@ class UserService : UserDetailsService {
 
         userFromDb.firstName = user.firstName
         userFromDb.surName = user.surName
-        userFromDb.roles = user.roles
+//        userFromDb.roles = user.roles
 
         return userRepository.save(userFromDb)
     }
@@ -101,6 +105,27 @@ class UserService : UserDetailsService {
         return userRepository.save(userFromDb)
     }
 
+    fun changeUserByAdmin(user: User, userName: String): User {
+        val userFromDb = getUserByUserName(userName)
+
+        if (userFromDb.userName != userName)
+            if (userRepository.findUserByUserName(user.userName) != null)
+                throw UserException("Unable change '${user.userName}' username. Username '${user.userName}' already used'", UserError.USERNAME_IS_ALREADY_USED)
+
+        if (userFromDb.email != user.email)
+            if (userRepository.findUserByEmail(user.email) != null)
+                throw UserException("Unable change '${userFromDb.email}' email for '${userFromDb.userName} user. Email '${user.email}' already used'", UserError.EMAIL_IS_ALREADY_USED)
+
+        userFromDb.userName = user.userName
+        userFromDb.email = user.email
+        userFromDb.roles = user.roles
+        userFromDb.firstName = user.firstName
+        userFromDb.surName = user.surName
+        userFromDb.pass = if (user.pass.isNotEmpty()) this.passwordEncoder.encode(user.pass) else userFromDb.pass
+
+        return userRepository.save(userFromDb)
+        }
+
     fun getUsers(pageable: Pageable): MutableList<User> {
         val userList = userRepository.findAll(pageable).content
 
@@ -108,6 +133,11 @@ class UserService : UserDetailsService {
             throw UserException("Unable find users at ${pageable.pageNumber} page.", UserError.USER_NOT_FOUND)
         return userList
     }
+
+    fun getTechnicianUsers(): MutableList<User> {
+        return userRepository.findResponsibleUsers()
+    }
+
 
     fun getUsersByUsername(userName: String?, pageable: Pageable): MutableList<User> {
         val userList = userRepository.findAllByUserNameContains(userName, pageable).content
@@ -117,12 +147,15 @@ class UserService : UserDetailsService {
         return userList
     }
 
-    override fun loadUserByUsername(username: String?): UserDetails {
-        return getUserByUserName(username!!)
+    @Transactional
+    fun deleteUserByAdmin(userName: String) {
+        val userFromDb = getUserByUserName(userName)
+        requestRepository.deleteAllByAuthorUserName(userName)
+        userRepository.delete(userFromDb)
     }
 
-    fun getTechnicianUsers(): MutableList<User> {
-        return userRepository.findResponsibleUsers()
+    override fun loadUserByUsername(username: String?): UserDetails {
+        return getUserByUserName(username!!)
     }
 
     fun verifyUser(userName: String, code: String): User {

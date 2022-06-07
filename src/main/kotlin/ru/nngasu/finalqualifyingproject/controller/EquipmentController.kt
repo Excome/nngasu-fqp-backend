@@ -29,7 +29,7 @@ class EquipmentController {
     private lateinit var equipmentService: EquipmentService
 
     @GetMapping("/equipments")
-    @JsonView(EquipmentView.Common::class)
+    @JsonView(EquipmentView.All::class)
     @Throws(EquipmentException::class)
     fun getEquipments(@RequestParam(required = false) name: String?,
                       @RequestParam(required = false) type: String?,

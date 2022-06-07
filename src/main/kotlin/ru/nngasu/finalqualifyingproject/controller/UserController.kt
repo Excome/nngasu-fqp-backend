@@ -15,6 +15,7 @@ import ru.nngasu.finalqualifyingproject.model.Role
 import ru.nngasu.finalqualifyingproject.model.User
 import ru.nngasu.finalqualifyingproject.model.jsonView.UserView
 import ru.nngasu.finalqualifyingproject.service.UserService
+import java.sql.Struct
 
 /**
 @author Peshekhonov Maksim
@@ -107,5 +108,33 @@ class UserController(private val userService: UserService) {
         }else {
             ResponseEntity(HttpStatus.FORBIDDEN)
         }
+    }
+
+    @PutMapping("/admin/users/{userName}")
+    @JsonView(UserView.Profile::class)
+    @Throws(UserException::class)
+    fun editUserByAdmin(@PathVariable userName: String,  @RequestBody user: User,
+                        @AuthenticationPrincipal currentUser: User): ResponseEntity<User>{
+        return if (currentUser.hasPriorityMoreThan(Role.ROLE_MODERATOR)){
+            val responseBody = userService.changeUserByAdmin(user, userName)
+            ResponseEntity<User>(responseBody, HttpStatus.OK)
+        } else {
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+    }
+
+    @DeleteMapping("/admin/users/{userName}")
+    @JsonView(UserView.Profile::class)
+    @Throws(UserException::class)
+    fun deleteUserByAdmin(@PathVariable userName: String,
+                          @AuthenticationPrincipal currentUser: User): ResponseEntity<String> {
+        return if (currentUser.hasPriorityMoreThan(Role.ROLE_ADMIN)){
+            LOGGER.info("Administrator '${currentUser.userName}' gonna delete '$userName' user")
+            userService.deleteUserByAdmin(userName)
+            ResponseEntity(HttpStatus.OK)
+        } else {
+            ResponseEntity(HttpStatus.FORBIDDEN)
+        }
+
     }
 }

@@ -32,7 +32,7 @@ class User : UserDetails {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "user_roles", joinColumns = [JoinColumn(name = "user_id")])
     @Enumerated(EnumType.STRING)
-    @JsonView(UserView.Profile::class)
+    @JsonView(UserView.Common::class)
     var roles: MutableSet<Role> = mutableSetOf(Role.ROLE_GUEST)
 
     @JsonView(UserView.Common::class)
