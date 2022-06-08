@@ -84,11 +84,10 @@ class UserController(private val userService: UserService) {
     @Throws(UserException::class)
     fun changeUserPassword(@PathVariable userName: String, @RequestBody user: User,
                            @AuthenticationPrincipal currentUser: User): ResponseEntity<User>{
-        return if (currentUser.userName == userName || currentUser.roles.contains(Role.ROLE_MODERATOR)
-            || currentUser.roles.contains(Role.ROLE_ADMIN)){
+        return if (currentUser.userName == userName || currentUser.hasPriorityMoreThan(Role.ROLE_MODERATOR)){
             user.userName = userName
-            userService.changeUserPassword(user)
-            ResponseEntity<User>(HttpStatus.OK)
+            val requestBody = userService.changeUserPassword(user)
+            ResponseEntity<User>(requestBody, HttpStatus.OK)
         }else {
             ResponseEntity(HttpStatus.FORBIDDEN)
         }

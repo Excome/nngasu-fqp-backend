@@ -58,7 +58,7 @@ class RequestController {
     fun getRequest(@PathVariable id: Long,
                    @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
         LOGGER.info("User ${crrUser.userName} tries to get request with '$id' id")
-        return if (crrUser.hasPriorityMoreThan(Role.ROLE_TEACHER)){
+        return if (crrUser.hasPriorityMoreThan(Role.ROLE_USER)){
             val responseBody = requestService.getRequestById(id = id)
             LOGGER.debug("Return request: $responseBody")
             ResponseEntity(responseBody, HttpStatus.OK)
@@ -91,7 +91,7 @@ class RequestController {
     fun editRequest(@PathVariable id: Long, @RequestBody request: Request,
                     @AuthenticationPrincipal crrUser: User): ResponseEntity<Request>{
         LOGGER.info("User '${crrUser.userName}' tries to edit request with '$id' id: $request")
-        return if (crrUser.hasPriorityMoreThan(Role.ROLE_TECHNICIAN)){
+        return if (crrUser.hasPriorityMoreThan(Role.ROLE_TEACHER)){
             val responseBody = requestService.changeRequest(request)
             LOGGER.debug("Returned: $responseBody")
             ResponseEntity(responseBody, HttpStatus.OK)
