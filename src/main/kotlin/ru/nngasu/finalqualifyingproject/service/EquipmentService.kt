@@ -3,6 +3,7 @@ package ru.nngasu.finalqualifyingproject.service
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import ru.nngasu.finalqualifyingproject.exception.EquipmentException
 import ru.nngasu.finalqualifyingproject.exception.error.EquipmentError
 import ru.nngasu.finalqualifyingproject.model.Equipment
@@ -72,9 +73,10 @@ class EquipmentService {
 
         return equipmentRepository.save(equipmentFromDb)
     }
-
+    @Transactional
     fun removeEquipment(name: String){
         val equipment = getEquipmentByName(name)
+        equipmentRepository.removeEquipmentsFromRequests(equipment.id)
         equipmentRepository.delete(equipment)
     }
 }
